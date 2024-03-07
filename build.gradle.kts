@@ -62,27 +62,6 @@ tasks.jar {
     }
 }
 
-graalvmNative {
-    toolchainDetection.set(false)
-    binaries {
-        named("main") {
-            imageName.set("demo-graalvm-application")
-            mainClass.set("demo.DemoApplication")
-            buildArgs.add("--verbose")
-        }
-    }
-}
-
-tasks {
-    dockerfileNative {
-        baseImage.set("ghcr.io/graalvm/native-image-community:21")
-        jdkVersion.set("21")
-    }
-    dockerBuildNative {
-        images.add("ct/micronaut-postgres-kotlin")
-    }
-}
-
 kotlin {
     jvmToolchain(21)
 }

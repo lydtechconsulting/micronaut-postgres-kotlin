@@ -12,6 +12,11 @@ https://github.com/lydtechconsulting/micronaut-postgres-java
 
 The project requires Java 21 to build.
 
+Start the Postgres Docker container:
+```
+docker-compose up -d
+```
+
 Build and test the Micronaut application, and then run:
 ```
 ./gradlew clean test
