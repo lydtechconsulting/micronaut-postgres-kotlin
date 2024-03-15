@@ -1,16 +1,14 @@
 package demo.domain
 
-import jakarta.persistence.Entity
-import jakarta.persistence.GeneratedValue
-import jakarta.persistence.Id
-import org.hibernate.annotations.GenericGenerator
+import io.micronaut.data.annotation.AutoPopulated
+import io.micronaut.data.annotation.MappedEntity
 import java.util.UUID
+import javax.persistence.Id
 
-@Entity(name = "Item")
+@MappedEntity
 data class Item(
     @Id
-    @GeneratedValue(generator = "uuid2")
-    @GenericGenerator(name = "uuid2", strategy = "uuid2")
+    @AutoPopulated
     var id: UUID? = null,
 
     var name: String

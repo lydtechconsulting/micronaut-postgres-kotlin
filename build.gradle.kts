@@ -5,7 +5,6 @@ plugins {
     kotlin("jvm") version "1.9.22"
     kotlin("kapt") version "1.9.22"
     kotlin("plugin.serialization") version "1.9.22"
-    kotlin("plugin.jpa") version "1.9.22"
 }
 
 version = "1.0.0"
@@ -23,10 +22,9 @@ dependencies {
     implementation("io.micronaut:micronaut-http-client")
     implementation("io.micronaut:micronaut-jackson-databind")
     implementation("io.micronaut.kotlin:micronaut-kotlin-runtime")
-    implementation("io.micronaut.data:micronaut-data-jpa:4.6.2")
-    implementation("io.micronaut.data:micronaut-data-hibernate-jpa:4.6.2")
-    implementation("io.micronaut.sql:micronaut-jdbc-hikari")
-    implementation("io.micronaut.flyway:micronaut-flyway")
+    implementation("io.micronaut.data:micronaut-data-jdbc:4.6.2")
+    implementation("io.micronaut.sql:micronaut-jdbc-hikari:2.2.6")
+    implementation("io.micronaut.liquibase:micronaut-liquibase")
     implementation("io.micronaut:micronaut-management")
     implementation("org.jetbrains.kotlin:kotlin-reflect:1.9.22")
     implementation("org.jetbrains.kotlin:kotlin-stdlib:1.9.22")
@@ -34,11 +32,11 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-core:1.6.3")
     implementation("org.apache.commons:commons-lang3:3.14.0")
     implementation("javax.validation:validation-api:2.0.1.Final")
+    implementation("javax.persistence:javax.persistence-api:2.2")
     implementation("org.postgresql:postgresql")
     implementation("org.slf4j:slf4j-api")
     implementation("ch.qos.logback:logback-classic")
 
-    runtimeOnly("org.flywaydb:flyway-database-postgresql")
     runtimeOnly("org.yaml:snakeyaml")
 
     testAnnotationProcessor("org.projectlombok:lombok:1.18.30")
@@ -49,7 +47,7 @@ dependencies {
     testImplementation("dev.lydtech:component-test-framework:2.11.0")
     testImplementation("io.rest-assured:rest-assured:5.4.0")
     testImplementation("io.rest-assured:kotlin-extensions:5.4.0")
-    testImplementation("com.h2database:h2")
+    testImplementation("com.h2database:h2:2.2.220")
 }
 
 application {
@@ -59,6 +57,28 @@ application {
 tasks.jar {
     manifest {
         attributes["Main-Class"] = "demo.DemoApplication"
+    }
+}
+
+graalvmNative {
+    toolchainDetection.set(false)
+    binaries {
+        named("main") {
+            imageName.set("demo-graalvm-application")
+            mainClass.set("demo.DemoApplication")
+            buildArgs.add("--verbose")
+        }
+    }
+}
+
+tasks {
+    dockerfileNative {
+        baseImage.set("ghcr.io/graalvm/native-image-community:21")
+        jdkVersion.set("21")
+        args("-Dmicronaut.config.files=file:/application.yml")
+    }
+    dockerBuildNative {
+        images.add("ct/micronaut-postgres-kotlin")
     }
 }
 
